@@ -108,3 +108,8 @@ This will rebuild and restart the container with the latest configurations.
 
 4. **VS-Code doesn't recognize the jupyter kernel**: Select the Python 3.12.9 /usr/local/bin/python environment. If it doesn't work or the kernel gets stuck try ctrl+shif+P `reload window`.
 ---
+
+## License
+The contents of this repository are licensed under the MIT License.  
+The `pdftoaas` subfolder contains third-party code, distributed under its own MIT License.
+
