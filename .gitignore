@@ -1,0 +1,12 @@
+.env
+.venv
+.ipynb_checkpoints/
+.DS_Store
+__pycache__/
+*.pyc
+aas_generation.log
+notebooks/pdf2aas_experiments/temp/dict/
+embedding.sqlite
+*.sqlite
+
+
