@@ -107,4 +107,9 @@ This will rebuild and restart the container with the latest configurations.
 3. **Environment not set correctly**: Double-check that the correct Python environment or other configurations are set in the `devcontainer.json` for each service.
 
 4. **VS-Code doesn't recognize the jupyter kernel**: Select the Python 3.12.9 /usr/local/bin/python environment. If it doesn't work or the kernel gets stuck try ctrl+shif+P `reload window`.
+
 ---
+
+## License
+This repository is licensed under the MIT License (see [LICENSE](./LICENSE)).  
+The `pdftoaas` subfolder includes code from the [pdftoaas project], which retains its original MIT License (see [`pdftoaas/LICENSE`](./pdftoaas/LICENSE)).
