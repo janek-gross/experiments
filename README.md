@@ -112,4 +112,4 @@ This will rebuild and restart the container with the latest configurations.
 
 ## License
 This repository is licensed under the MIT License (see [LICENSE](./LICENSE)).  
-The `pdftoaas` subfolder includes code from the [pdftoaas project], which retains its original MIT License (see [`pdftoaas/LICENSE`](./pdftoaas/LICENSE)).
+The `pdftoaas` subfolder includes code from another, which retains its original MIT License.
