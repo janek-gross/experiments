@@ -1,0 +1,17 @@
+networks:
+  eval-net:
+    driver: bridge
+
+services:
+  experiments:
+    build: ./pdftoaas
+    container_name: experiments
+    ports:
+      - "7860:7860"
+    volumes:
+      - ${DATA_PATH}:/app/data
+      - ./:/app/perturbation_experiments
+    networks:
+      - eval-net
+    env_file:
+      - .env

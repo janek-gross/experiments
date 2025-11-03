@@ -1,0 +1,11 @@
+{
+    "name": "Perturbation Experiments DevContainer",
+    "dockerComposeFile": "../../docker-compose.yml",  // Path to your existing docker-compose.yml
+    "service": "experiments",  // Name of the service in your docker-compose.yml you want to use for development
+    "workspaceFolder": "/app",  // Path to the workspace inside the container
+    "shutdownAction": "stopCompose",
+    "extensions": [
+      "ms-python.python",  // Example extension: Python support
+      "ms-toolsai.jupyter"  // Example extension: Jupyter support
+    ]
+  }

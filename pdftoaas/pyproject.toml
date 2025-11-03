@@ -1,0 +1,80 @@
+[project]
+authors = [
+  {name = "Julian Vogel", email = "julian.vogel@sms-group.com"},
+  {name = "Christian Malek", email = "christian.malek@iese.fraunhofer.de"},
+]
+dependencies = [
+  "pydantic",
+  "pydantic-settings",
+  "openai",
+  "beautifulsoup4",
+  "requests",
+  "python-dotenv",
+  "pypdfium2",
+  "pdfplumber",
+  "tabulate",
+  "basyx-python-sdk@git+https://github.com/eclipse-basyx/basyx-python-sdk.git@b178a8cc1e8bbe5076e935aa0359133a3f772b9e#subdirectory=sdk",
+  "xlrd",
+]
+name = "pdf2aas"
+requires-python = ">=3.10"
+dynamic = ["version"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "pyinstaller",
+  "ruff",
+  "mypy",
+  "types-beautifulsoup4",
+  "types-openpyxl",
+  "types-requests",
+  "types-tabulate",
+]
+demo = [
+  "gradio",
+  "gradio_pdf",
+  "pandas",
+  "openpyxl",
+]
+eval = [
+  "matplotlib",
+  "levenshtein",
+  "openpyxl",
+]
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+
+[tool.ruff]
+include = ["pyproject.toml", "src/**/*.py"]
+exclude = ["tests/**", "examples/**"]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "D203", # conflicts with D211
+  "D213", # conflicts with D212
+  "PTH123", # Allow to use builtin open() function
+  "TD002", # Don't force todo authors
+  "TD003", # Don't force todo issues
+  "FIX002", # Don't force to fix todos
+  "PD011", # Pandas use of dot values, often false positive
+  "PLR0913", # Allow more than 5 function arguments, especially for initializers
+  "ANN401", # Allow Any as type argument
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 80
+
+[tool.mypy]
+files = [
+  "src/"
+]
