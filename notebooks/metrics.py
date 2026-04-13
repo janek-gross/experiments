@@ -446,9 +446,12 @@ class SubmodelComparison:
                 similarity = float(np.dot(self.reference_value_embeddings[match['reference_index']],
                                     self.generated_value_embeddings[i][match['generated_index']]))
                 match['similarity_value_cosine'] = similarity
-                match['similarity_value_ratio'] = 1.0
                 ref_value = self.reference_property_names[match['reference_index']]['ref_value']
                 gen_value = self.generated_property_names[i][match['generated_index']]['gen_value']
+                match['similarity_value_ratio'] = fuzz.ratio(ref_value,gen_value)/100
+                match['similarity_value_partial'] = fuzz.partial_ratio(ref_value,gen_value)/100
+                match['similarity_value_ratio'] = fuzz.token_sort_ratio(ref_value.replace('_',' '),gen_value.replace('_',' '))/100
+
                 if is_float(ref_value):
                     if is_float(gen_value):
                         match['deviation'] = relative_difference(float(gen_value),float(ref_value))
@@ -501,7 +504,7 @@ class SubmodelComparison:
             for j,match in enumerate(matches):
                 ref_value = self.reference_property_names[match['reference_index']]['ref_value']
                 gen_value = self.generated_property_names[i][match['generated_index']]['gen_value']
-                match['similarity_value_ratio'] = fuzz.token_sort_ratio(ref_value.replace('_',' '),gen_value.replace('_',' '))/100
+                match['similarity_value_token_sort_ratio'] = fuzz.token_sort_ratio(ref_value.replace('_',' '),gen_value.replace('_',' '))/100
                 if is_float(ref_value):
                     if is_float(gen_value):
                         match['deviation'] = relative_difference(float(gen_value),float(ref_value))
@@ -595,12 +598,12 @@ class SubmodelComparison:
 
 
         # Value statistics embedding matching
-        metrics['mean_similarity_value_embed'] = float(np.mean([prop['similarity_value_cosine'] for prop in self.matched_properties_embed[index]+self.matched_properties_semantic_id[index] if prop['deviation']==None]))
-        metrics['total_values_matched_embed_numeric'] = len([prop for prop in self.matched_properties_embed[index]+self.matched_properties_semantic_id[index] if prop['deviation'] != None])
-        metrics['total_values_matched_embed_string'] = len([prop for prop in self.matched_properties_embed[index]+self.matched_properties_semantic_id[index] if prop['deviation'] == None])
+        metrics['mean_similarity_value_embed'] = float(np.mean([prop['similarity_value_cosine'] for prop in self.matched_properties_semantic_id[index] if prop['deviation']==None]))
+        metrics['total_values_matched_embed_numeric'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation'] != None])
+        metrics['total_values_matched_embed_string'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation'] == None])
 
-        metrics['value_matches_embed_numeric'] = len([prop for prop in self.matched_properties_embed[index]+self.matched_properties_semantic_id[index] if prop['deviation']!=None and prop['deviation'] < self.tolerance])
-        metrics['value_matches_string_embed_high_conf'] = len([prop for prop in self.matched_properties_embed[index]+self.matched_properties_semantic_id[index] if prop['deviation']==None and prop['similarity_value_cosine'] >= self.high_thresh])
+        metrics['value_matches_embed_numeric'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation']!=None and prop['deviation'] < self.tolerance])
+        metrics['value_matches_string_embed_high_conf'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation']==None and prop['similarity_value_cosine'] >= self.high_thresh])
 
         metrics['value_recall_embed'] = (metrics['value_matches_embed_numeric'] + metrics['value_matches_string_embed_high_conf'])/metrics['total_reference_properties']
 
@@ -615,12 +618,12 @@ class SubmodelComparison:
             metrics['value_f1_embed'] = 0.0
 
         # Value statistics levenstein ratio matching
-        metrics['mean_similarity_value_ratio'] = float(np.mean([prop['similarity_value_ratio'] for prop in self.matched_properties_string_ratio[index]+self.matched_properties_semantic_id[index] if prop['deviation']==None]))
-        metrics['total_values_matched_ratio_numeric'] = len([prop for prop in self.matched_properties_string_ratio[index]+self.matched_properties_semantic_id[index] if prop['deviation'] != None])
-        metrics['total_values_matched_ratio_string'] = len([prop for prop in self.matched_properties_string_ratio[index]+self.matched_properties_semantic_id[index] if prop['deviation'] == None])
+        metrics['mean_similarity_value_ratio'] = float(np.mean([prop['similarity_value_ratio'] for prop in self.matched_properties_semantic_id[index] if prop['deviation']==None]))
+        metrics['total_values_matched_ratio_numeric'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation'] != None])
+        metrics['total_values_matched_ratio_string'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation'] == None])
 
-        metrics['value_matches_ratio_numeric'] = len([prop for prop in self.matched_properties_string_ratio[index]+self.matched_properties_semantic_id[index] if prop['deviation']!=None and prop['deviation'] < self.tolerance])
-        metrics['value_matches_string_ratio_high_conf'] = len([prop for prop in self.matched_properties_string_ratio[index]+self.matched_properties_semantic_id[index] if prop['deviation']==None and prop['similarity_value_ratio'] >= self.high_thresh])
+        metrics['value_matches_ratio_numeric'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation']!=None and prop['deviation'] < self.tolerance])
+        metrics['value_matches_string_ratio_high_conf'] = len([prop for prop in self.matched_properties_semantic_id[index] if prop['deviation']==None and prop['similarity_value_ratio'] >= self.high_thresh])
 
         metrics['value_recall_ratio'] = (metrics['value_matches_ratio_numeric'] + metrics['value_matches_string_ratio_high_conf'])/metrics['total_reference_properties']
 
@@ -635,58 +638,6 @@ class SubmodelComparison:
             metrics['value_f1_ratio'] = 0.0
 
 
-
-        # # None or empty values
-        # "total_generated_properties_none_value": none_count_generated,  # Number of generated properties with a None/empty value
-        # "total_generated_properties_without_none_value": non_none_generated,  # Generated properties that actually contain data (excluding Nones)
-
-        # # Effective difference (ignoring Nones)
-        # "total_property_count_difference_effective": non_none_generated - total_original,  # Effective property count difference after excluding empty values
-
-        # # Quality indicator for generated values
-        # "generated_properties_none_value_ratio": none_count_generated / total_generated if total_generated else 0.0,  # Ratio of empty properties in the generated file
-        # "generated_properties_non_empty_ratio": non_none_generated / total_generated if total_generated else 0.0,  # Ratio of non empty properties in the generated file
-        
-
-        
-        
-        # "high_conf_match_ratio_from_matches": high_conf_count / total_matches if total_matches else 0.0,
-        # "medium_conf_match_ratio_from_matches": medium_conf_count / total_matches if total_matches else 0.0,
-        # "low_conf_match_ratio_from_all": low_conf_count / (total_original if total_original else 1),
-        
-
-        # # Original unmatched stats
-        # "unmatched_original_high_conf_only": total_original - high_conf_count,  # How many original properties couldn't be matched with high confidence
-        # "unmatched_original_high_medium_conf": total_original - (high_conf_count + medium_conf_count),
-        # "matched_original_ratio_high_conf": high_conf_count / total_original,
-        # "unmatched_original_ratio": 1 - high_conf_count / total_original if total_original else 0.0,  # missrate: % of original properties that were missed
-
-        # # Generated unmatched stats
-        # "unmatched_generated_high_conf_only": total_generated - high_conf_count,  # How many original properties couldn't be matched with high confidence
-        # "unmatched_generated_high_medium_conf": total_generated - (high_conf_count + medium_conf_count),
-        # "unmatched_generated_without_none": non_none_generated - high_conf_count,  # Generated non-empty properties that were unmatched
-
-        #"extra_generated_keys_ratio": unmatched_generated / total_generated,
-        
-        # # Coverage from generated side
-        # "matched_generated_ratio_high_conf": high_conf_count / total_generated if total_generated else 0.0,  # % of generated properties confidently matched
-        # "unmatched_generated_ratio": 1 - high_conf_count / total_generated if total_generated else 0.0,  # % of generated properties that were unmatched
-        # "matched_non_empty_generated_ratio": high_conf_count / non_none_generated if non_none_generated else 0.0,
-
-
-        # # Overall alignment indicator
-        # "match_coverage_ratio": high_conf_count / (total_original + total_generated) if (total_original + total_generated) else 0.0,  # balanced coverage ratio: Matches relative to total number of properties across both submodels
-
-        # # Null value quality
-        # "generated_none_ratio": none_count_generated / total_generated if total_generated else 0.0,
-        
-        # "precision_high_conf": high_conf_count / total_generated if total_generated else 0.0,
-        # "recall_high_conf":    high_conf_count / total_original if total_original else 0.0,
-        # "f1_high_conf": (
-        #     2 * high_conf_count / (total_generated + total_original)
-        #     if (total_generated + total_original) else 0.0
-        # ),
-
         return metrics
 
 
@@ -695,25 +646,6 @@ class SubmodelComparison:
         self.results = [self._metrics(i) for i in range(len(self.matched_properties))]
 
 
-    
-    # def _count_none_values(self, props: Dict[str, Any]) -> int:
-    #     count = 0
-    #     for prop in props:
-    #         val = prop.values()
-    #         if isinstance(val, list):  # MultiLanguageProperty
-    #             if all(
-    #                 isinstance(entry, dict) and (
-    #                     entry.get("text") is None or
-    #                     str(entry.get("text")).strip().lower() == "none" or
-    #                     str(entry.get("text")).strip() == ""
-    #                 )
-    #                 for entry in val
-    #             ):
-    #                 count += 1
-    #         else:  # Regular Property
-    #             if val is None or str(val).strip().lower() == "none" or str(val).strip() == "":
-    #                 count += 1
-    #     return count
     
 
     def run(self):
