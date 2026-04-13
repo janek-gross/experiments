@@ -1,6 +1,6 @@
 # Quality Metrics for AI-Generated Asset Administration Shells: A Perturbation-Based Evaluation Approach
 
-This project uses **Docker** and **VS Code Dev Containers** to create a OS-independent reproducible development environment to reproduce the experiments conducted for the publication `Quality Metrics for AI-Generated Asset Administration Shells: A Perturbation-Based Evaluation Approach`. At the moment project is structured using five notebooks to produce the published results. In the future however, the authors plan to integrate the evaluation procedure into a more easily accesible evaluation framework. This README will guide you through the setup process and project structure. If you have trouble reproducing the results please contact the authors janek.gross@hs-mainz.de and elena.zentgraf@hs-mainz.de.
+This project uses **Docker** and **VS Code Dev Containers** to create a OS-independent reproducible development environment to reproduce the experiments conducted for the publication `Quality Metrics for AI-Generated Asset Administration Shells: A Perturbation-Based Evaluation Approach`. At the moment project is structured using five notebooks to produce the published results. In the future however, the authors plan to integrate the evaluation procedure into a more easily accesible evaluation framework. This README will guide you through the setup process and project structure. If you have trouble reproducing the results please contact the authors.
 
 ---
 
